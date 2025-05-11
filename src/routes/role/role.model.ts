@@ -1,4 +1,4 @@
-import { PaginationSchema } from 'src/shared/models/pagination.model'
+import { PaginationQuerySchema } from 'src/shared/models/request.model'
 import { PermissionSchema } from 'src/shared/models/shared-permission'
 import { RoleSchema, RoleType } from 'src/shared/models/shared-role.model'
 import { z } from 'zod'
@@ -31,7 +31,7 @@ export const GetRoleParamSchema = z
 	})
 	.strict()
 
-export const GetRoleQuerySchema = PaginationSchema
+export const GetRoleQuerySchema = PaginationQuerySchema
 
 export const UpdateRoleBodySchema = RoleSchema.pick({
 	name: true,

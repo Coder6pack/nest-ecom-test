@@ -1,4 +1,4 @@
-import { PaginationSchema } from 'src/shared/models/pagination.model'
+import { PaginationQuerySchema } from 'src/shared/models/request.model'
 import { PermissionSchema, PermissionType } from 'src/shared/models/shared-permission'
 import { z } from 'zod'
 
@@ -11,7 +11,7 @@ export const CreatePermissionBodySchema = PermissionSchema.pick({
 
 export const GetPermissionDetailResSchema = PermissionSchema
 
-export const GetPermissionQuerySchema = PaginationSchema
+export const GetPermissionQuerySchema = PaginationQuerySchema
 
 export const GetPermissionsResSchema = GetPermissionQuerySchema.extend({
 	data: z.array(PermissionSchema),

@@ -1,12 +1,10 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma-client"
 }
 
 generator json {
   provider = "prisma-json-types-generator"
 }
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -148,8 +146,8 @@ model Role {
 
 model Product {
   id                  Int                  @id @default(autoincrement())
-  publishedAt         DateTime?
   name                String               @db.VarChar(500)
+  description         String
   basePrice           Float
   virtualPrice        Float
   brandId             Int
@@ -221,23 +219,24 @@ model SKU {
 }
 
 model Brand {
-  id          Int       @id @default(autoincrement())
-  logo        String    @db.VarChar(1000)
+  id       Int       @id @default(autoincrement())
+  logo     String    @db.VarChar(1000)
+  products Product[]
+  name     String    @db.VarChar(500)
+
   createdById Int?
+  createdBy   User? @relation("BrandCreatedBy", fields: [createdById], references: [id], onDelete: SetNull, onUpdate: NoAction)
   updatedById Int?
+  updatedBy   User? @relation("BrandUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull, onUpdate: NoAction)
   deletedById Int?
-  deletedAt   DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  name        String    @db.VarChar(500)
-  createdBy   User?     @relation("BrandCreatedBy", fields: [createdById], references: [id], onUpdate: NoAction)
-  deletedBy   User?     @relation("BrandDeletedBy", fields: [deletedById], references: [id], onUpdate: NoAction)
-  updatedBy   User?     @relation("BrandUpdatedBy", fields: [updatedById], references: [id], onUpdate: NoAction)
-  products    Product[]
+  deletedBy   User? @relation("BrandDeletedBy", fields: [deletedById], references: [id], onDelete: SetNull, onUpdate: NoAction)
+
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@index([deletedAt])
 }
-
 model CartItem {
   id        Int      @id @default(autoincrement())
   quantity  Int
@@ -263,8 +262,6 @@ model ProductSKUSnapshot {
   quantity            Int
   productId           Int?
   createdAt           DateTime @default(now())
-  /// [ProductTranslations]
-  productTranslations Json
   order               Order?   @relation(fields: [orderId], references: [id], onUpdate: NoAction)
   product             Product? @relation(fields: [productId], references: [id], onUpdate: NoAction)
   sku                 SKU?     @relation(fields: [skuId], references: [id], onUpdate: NoAction)

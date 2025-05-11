@@ -5,7 +5,7 @@ import { MulterModule } from '@nestjs/platform-express'
 import multer from 'multer'
 import { generateRandomFileName } from 'src/shared/helpers'
 import { existsSync, mkdirSync } from 'fs'
-import { UPLOAD_DIR } from 'src/shared/constants/order.constant'
+import { UPLOAD_DIR } from 'src/shared/constants/other.constant'
 const storage = multer.diskStorage({
 	destination: function (req, file, cb) {
 		cb(null, UPLOAD_DIR)

@@ -15,12 +15,12 @@ import {
 import { FilesInterceptor } from '@nestjs/platform-express'
 import { Response } from 'express'
 import path from 'path'
-import { UPLOAD_DIR } from 'src/shared/constants/order.constant'
 import { IsPublic } from 'src/shared/decorators/auth.decorator'
 import { MediaService } from './media.service'
 import { ParseFilePipeWithUnlink } from './parse-file-pipe-unlink.pipe'
 import { ZodSerializerDto } from 'nestjs-zod'
 import { PresignedUploadFileBodyDTO, PresignedUploadFileResDTO, UploadFilesResDTO } from './media.dto'
+import { UPLOAD_DIR } from 'src/shared/constants/other.constant'
 
 @Controller('media')
 export class MediaController {
