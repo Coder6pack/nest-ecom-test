@@ -2,8 +2,8 @@ import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, HttpE
 import { Reflector } from '@nestjs/core'
 import { AUTH_TYPE_KEY, AuthTypeDecoratorType } from '../decorators/auth.decorator'
 import { AccessTokenGuard } from './access-token.guard'
-import { APIKeyGuard } from './api-key.guard'
 import { AuthItem, ConditionGuard } from '../constants/auth.constant'
+import { PaymentAPIKeyGuard } from './payment-api-key.guard'
 
 @Injectable()
 export class AuthenticationGuard implements CanActivate {
@@ -11,23 +11,22 @@ export class AuthenticationGuard implements CanActivate {
 	constructor(
 		private readonly reflector: Reflector,
 		private readonly accessTokenGuard: AccessTokenGuard,
-		private readonly apiKeyGuard: APIKeyGuard,
+		private readonly paymentApiKeyGuard: PaymentAPIKeyGuard,
 	) {
 		this.authTypeGuardMap = {
 			[AuthItem.Bearer]: this.accessTokenGuard,
-			[AuthItem.APIKey]: this.apiKeyGuard,
+			[AuthItem.PaymentAPIKey]: this.paymentApiKeyGuard,
 			[AuthItem.None]: { canActivate: () => true },
 		}
 	}
-
 	async canActivate(context: ExecutionContext): Promise<boolean> {
 		const authTypeValue = this.getAuthTypeValue(context)
 		const guards = authTypeValue.authTypes.map((authType) => this.authTypeGuardMap[authType])
-
 		return authTypeValue.options.condition === ConditionGuard.And
-			? await this.handleAndCondition(guards, context)
-			: await this.handleOrCondition(guards, context)
+			? this.handleAndCondition(guards, context)
+			: this.handleOrCondition(guards, context)
 	}
+
 	private getAuthTypeValue(context: ExecutionContext): AuthTypeDecoratorType {
 		return (
 			this.reflector.getAllAndOverride<AuthTypeDecoratorType | undefined>(AUTH_TYPE_KEY, [
@@ -39,6 +38,8 @@ export class AuthenticationGuard implements CanActivate {
 
 	private async handleOrCondition(guards: CanActivate[], context: ExecutionContext) {
 		let lastError: any = null
+
+		// Duyệt qua hết các guard, nếu có 1 guard pass thì return true
 		for (const guard of guards) {
 			try {
 				if (await guard.canActivate(context)) {
@@ -48,6 +49,7 @@ export class AuthenticationGuard implements CanActivate {
 				lastError = error
 			}
 		}
+
 		if (lastError instanceof HttpException) {
 			throw lastError
 		}
@@ -55,6 +57,7 @@ export class AuthenticationGuard implements CanActivate {
 	}
 
 	private async handleAndCondition(guards: CanActivate[], context: ExecutionContext) {
+		// Duyệt qua hết các guard, nếu mọi guard đều pass thì return true
 		for (const guard of guards) {
 			try {
 				if (!(await guard.canActivate(context))) {

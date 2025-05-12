@@ -22,3 +22,11 @@ export const generateRandomFileName = (fileName: string): string => {
 	const ext = path.extname(fileName)
 	return `${uuidv4()}${ext}`
 }
+
+export const generateCancelPaymentJobId = (paymentId: number) => {
+	return `paymentId-${paymentId}`
+}
+
+export const generateRoomUserId = (userId: number) => {
+	return `userId-${userId}`
+}

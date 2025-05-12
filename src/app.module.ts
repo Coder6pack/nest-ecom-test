@@ -16,9 +16,23 @@ import { BrandModule } from './routes/brand/brand.module'
 import { CategoryModule } from './routes/category/category.module'
 import { ProductModule } from './routes/product/product.module'
 import { CartModule } from './routes/cart/cart.module'
+import { OrderModule } from './routes/order/order.module'
+import { PaymentModule } from './routes/payment/payment.module'
+import { BullModule } from '@nestjs/bullmq'
+import { PaymentConsumer } from './queues/payment.consumer'
 
 @Module({
 	imports: [
+		BullModule.forRoot({
+			connection: {
+				// host:"localhost",
+				// port:6379
+				host: 'redis-17549.c1.ap-southeast-1-1.ec2.redns.redis-cloud.com',
+				port: 17549,
+				username: 'default',
+				password: 'g8zkLLvGOMbKwHt58S9JZW7laUIAZZCb',
+			},
+		}),
 		SharedModule,
 		AuthModule,
 		PermissionModule,
@@ -30,6 +44,8 @@ import { CartModule } from './routes/cart/cart.module'
 		CategoryModule,
 		ProductModule,
 		CartModule,
+		OrderModule,
+		PaymentModule,
 	],
 	controllers: [AppController],
 	providers: [
@@ -46,6 +62,7 @@ import { CartModule } from './routes/cart/cart.module'
 			provide: APP_FILTER,
 			useClass: HttpExceptionFilter,
 		},
+		PaymentConsumer,
 	],
 })
 export class AppModule {}

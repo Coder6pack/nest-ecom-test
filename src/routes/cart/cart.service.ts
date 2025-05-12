@@ -8,7 +8,7 @@ export class CartService {
 	constructor(private readonly cartRepo: CartRepo) {}
 
 	getCart(userId: number, query: PaginationQueryType) {
-		return this.cartRepo.list({
+		return this.cartRepo.list2({
 			userId,
 			page: query.page,
 			limit: query.limit,

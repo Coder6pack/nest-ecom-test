@@ -19,7 +19,6 @@ export const OrderSchema = z.object({
 		phone: z.string(),
 		address: z.string(),
 	}),
-	shopId: z.number().nullable(),
 	paymentId: z.number(),
 
 	createdById: z.number().nullable(),
@@ -34,14 +33,6 @@ export const ProductSKUSnapshotSchema = z.object({
 	id: z.number(),
 	productId: z.number().nullable(),
 	productName: z.string(),
-	productTranslations: z.array(
-		z.object({
-			id: z.number(),
-			name: z.string(),
-			description: z.string(),
-			languageId: z.string(),
-		}),
-	),
 	skuPrice: z.number(),
 	image: z.string(),
 	skuValue: z.string(),
