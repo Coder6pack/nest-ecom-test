@@ -3,13 +3,46 @@ import { ProductRepo } from 'src/routes/product/product.repo'
 import { CreateProductBodyType, GetProductsQueryType, UpdateProductBodyType } from 'src/routes/product/product.model'
 import { NotFoundRecordException } from 'src/shared/error'
 import { isNotFoundPrismaError } from 'src/shared/helpers'
+import { OrderByType, SortByType } from 'src/shared/constants/other.constant'
 
 @Injectable()
 export class ProductService {
 	constructor(private readonly productRepo: ProductRepo) {}
 
-	async list(query: GetProductsQueryType) {
-		const data = await this.productRepo.list(query)
+	async list({
+		limit,
+		page,
+		name,
+		brandIds,
+		categories,
+		minPrice,
+		maxPrice,
+		orderBy,
+		sortBy,
+	}: {
+		limit: number
+		page: number
+		name?: string
+		brandIds?: number[]
+		categories?: number[]
+		minPrice?: number
+		maxPrice?: number
+		createdById?: number
+		isPublic?: boolean
+		orderBy: OrderByType
+		sortBy: SortByType
+	}) {
+		const data = await this.productRepo.list({
+			limit,
+			page,
+			name,
+			brandIds,
+			categories,
+			minPrice,
+			maxPrice,
+			orderBy,
+			sortBy,
+		})
 		return data
 	}
 

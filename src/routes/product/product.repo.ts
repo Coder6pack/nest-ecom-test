@@ -15,22 +15,89 @@ import { PrismaService } from 'src/shared/services/prisma.service'
 export class ProductRepo {
 	constructor(private readonly prismaService: PrismaService) {}
 
-	async list(query: GetProductsQueryType): Promise<GetProductsResType> {
-		const skip = (query.page - 1) * query.limit
-		const take = query.limit
+	async list({
+		limit,
+		page,
+		name,
+		brandIds,
+		categories,
+		minPrice,
+		maxPrice,
+		orderBy,
+		sortBy,
+	}: {
+		limit: number
+		page: number
+		name?: string
+		brandIds?: number[]
+		categories?: number[]
+		minPrice?: number
+		maxPrice?: number
+		orderBy: OrderByType
+		sortBy: SortByType
+	}): Promise<GetProductsResType> {
+		const skip = (page - 1) * limit
+		const take = limit
+		// eslint-disable-next-line prefer-const
+		let where: Prisma.ProductWhereInput = {
+			deletedAt: null,
+		}
+		if (name) {
+			where.name = {
+				contains: name,
+				mode: 'insensitive',
+			}
+		}
+		if (brandIds && brandIds.length > 0) {
+			where.brandId = {
+				in: brandIds,
+			}
+		}
+		if (categories && categories.length > 0) {
+			where.categories = {
+				some: {
+					id: {
+						in: categories,
+					},
+				},
+			}
+		}
+		if (minPrice !== undefined || maxPrice !== undefined) {
+			where.basePrice = {
+				...(minPrice !== undefined && { gte: minPrice }),
+				...(maxPrice !== undefined && { lte: maxPrice }),
+			}
+		}
+		// Mặc định sort theo createdAt mới nhất
+		let caculatedOrderBy: Prisma.ProductOrderByWithRelationInput | Prisma.ProductOrderByWithRelationInput[] = {
+			createdAt: orderBy,
+		}
+		if (sortBy === SortBy.Price) {
+			caculatedOrderBy = {
+				basePrice: orderBy,
+			}
+		} else if (sortBy === SortBy.Sale) {
+			caculatedOrderBy = {
+				orders: {
+					_count: orderBy,
+				},
+			}
+		}
 		const [totalItems, data] = await Promise.all([
 			this.prismaService.product.count({
-				where: {
-					deletedAt: null,
-				},
+				where,
 			}),
 			this.prismaService.product.findMany({
-				where: {
-					deletedAt: null,
+				where,
+				include: {
+					orders: {
+						where: {
+							deletedAt: null,
+							status: 'DELIVERED',
+						},
+					},
 				},
-				orderBy: {
-					createdAt: 'desc',
-				},
+				orderBy: caculatedOrderBy,
 				skip,
 				take,
 			}),
@@ -38,9 +105,9 @@ export class ProductRepo {
 		return {
 			data,
 			totalItems,
-			page: query.page,
-			limit: query.limit,
-			totalPages: Math.ceil(totalItems / query.limit),
+			page: page,
+			limit: limit,
+			totalPages: Math.ceil(totalItems / limit),
 		}
 	}
 

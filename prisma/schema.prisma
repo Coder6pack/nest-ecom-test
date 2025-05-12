@@ -18,6 +18,7 @@ model User {
   phoneNumber        String         @db.VarChar(50)
   avatar             String?        @db.VarChar(1000)
   totpSecret         String?        @db.VarChar(1000)
+  address            String?        @db.VarChar(500)@default("")
   status             UserStatus     @default(INACTIVE)
   roleId             Int
   createdById        Int?
@@ -38,7 +39,6 @@ model User {
   receivedMessages   Message[]      @relation("ToUser")
   createdOrders      Order[]        @relation("OrderCreatedBy")
   deletedOrders      Order[]        @relation("OrderDeletedBy")
-  soldOrders         Order[]        @relation("Shop")
   updatedOrders      Order[]        @relation("OrderUpdatedBy")
   orders             Order[]
   createdPermissions Permission[]   @relation("PermissionCreatedBy")
@@ -273,7 +273,6 @@ model Order {
   status      OrderStatus
   /// [Receiver]
   receiver    Json
-  shopId      Int?
   paymentId   Int
   createdById Int?
   updatedById Int?
@@ -284,7 +283,6 @@ model Order {
   createdBy   User?                @relation("OrderCreatedBy", fields: [createdById], references: [id], onUpdate: NoAction)
   deletedBy   User?                @relation("OrderDeletedBy", fields: [deletedById], references: [id], onUpdate: NoAction)
   payment     Payment              @relation(fields: [paymentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  shop        User?                @relation("Shop", fields: [shopId], references: [id], onUpdate: NoAction)
   updatedBy   User?                @relation("OrderUpdatedBy", fields: [updatedById], references: [id], onUpdate: NoAction)
   user        User                 @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   items       ProductSKUSnapshot[]

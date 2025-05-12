@@ -15,6 +15,7 @@ import { MediaModule } from './routes/media/media.module'
 import { BrandModule } from './routes/brand/brand.module'
 import { CategoryModule } from './routes/category/category.module'
 import { ProductModule } from './routes/product/product.module'
+import { CartModule } from './routes/cart/cart.module'
 
 @Module({
 	imports: [
@@ -28,6 +29,7 @@ import { ProductModule } from './routes/product/product.module'
 		BrandModule,
 		CategoryModule,
 		ProductModule,
+		CartModule,
 	],
 	controllers: [AppController],
 	providers: [
