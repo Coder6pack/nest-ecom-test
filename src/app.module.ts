@@ -20,6 +20,7 @@ import { OrderModule } from './routes/order/order.module'
 import { PaymentModule } from './routes/payment/payment.module'
 import { BullModule } from '@nestjs/bullmq'
 import { PaymentConsumer } from './queues/payment.consumer'
+import { WebsocketModule } from './websockets/websocket.module'
 
 @Module({
 	imports: [
@@ -33,6 +34,7 @@ import { PaymentConsumer } from './queues/payment.consumer'
 				password: 'g8zkLLvGOMbKwHt58S9JZW7laUIAZZCb',
 			},
 		}),
+		WebsocketModule,
 		SharedModule,
 		AuthModule,
 		PermissionModule,
