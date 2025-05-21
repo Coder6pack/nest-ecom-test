@@ -1,11 +1,16 @@
 import { UserSchema } from 'src/shared/models/shared-user.model'
 import { z } from 'zod'
 
-export const UpdateMeBodySchema = UserSchema.pick({
-	name: true,
-	phoneNumber: true,
-	avatar: true,
-}).strict()
+export const UpdateMeBodySchema = z
+	.object({
+		// name: true,
+		// phoneNumber: true,
+		// avatar: true,
+		name: z.string().max(255),
+		phoneNumber: z.string().optional(),
+		avatar: z.string().url().optional(),
+	})
+	.strict()
 
 export const ChangePasswordBodySchema = UserSchema.pick({
 	password: true,
@@ -20,7 +25,7 @@ export const ChangePasswordBodySchema = UserSchema.pick({
 			ctx.addIssue({
 				code: 'custom',
 				message: 'Error.ConfirmPasswordNotMatch',
-				path: ['confirmNewPassword'],
+				path: ['confirmPassword'],
 			})
 		}
 	})
